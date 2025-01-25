@@ -1,10 +1,15 @@
+> ⚠️ **WARNING:**
+> This code is published as-is for reference and educational purposes in the field of deepfake detection. It represents a historical implementation by TrueMedia.org and is not actively maintained. The repository does not accept pull requests, issues, modifications, or support requests. The original TrueMedia.org organization has ceased operations.
+
 # Deepfake Video Detection Using Generative Convolutional Vision Transformer
+
 Deressa Wodajo, Solomon Atnafu, Zahid Akhtar
 
 This repository contains the implementation code for **Deepfake Video Detection Using Generative Convolutional Vision Transformer (GenConViT)** paper. Find the full paper on arXiv [here](https://arxiv.org/abs/2307.07036).
 
 <br/><br/>
 ![The Proposed GenConViT Deepfake Detection Framework](img/genconvit.png)
+
 <p align="center">The Proposed GenConViT Deepfake Detection Framework</p>
 
 <p style="text-align: justify;">
@@ -14,6 +19,7 @@ Deepfakes have raised significant concerns due to their potential to spread fals
 ## GenConViT Model Architecture
 
 The GenConViT model consists of two independent networks and incorporates the following modules:
+
 <pre>
     Autoencoder (ed),
     Variational Autoencoder (vae), and
@@ -31,6 +37,7 @@ The code in this repository enables training and testing of the GenConViT model 
 - [Results](#results)
 
 ## Requirements
+
 <pre>
     * Python 3.x
     * PyTorch
@@ -64,8 +71,8 @@ pip install -r requirements.txt
 To train the GenConViT model, follow these steps:
 
 1. Prepare the training data, or use the sample training data provided:
-    * Ensure that the training data is located in the specified directory path.
-    * The training data should be organized in the required format. The `fake` directory contains images that are fake, while the `real` directory contains images that are real.
+_ Ensure that the training data is located in the specified directory path.
+_ The training data should be organized in the required format. The `fake` directory contains images that are fake, while the `real` directory contains images that are real.
 <pre>
     train:
         - fake
@@ -77,7 +84,6 @@ To train the GenConViT model, follow these steps:
         - fake
         - real
 </pre>
- 
 
 2. Run the training script:
 
@@ -100,26 +106,32 @@ python train.py
 
 The model weights and metrics are saved in the `weight` folder.
 
-**Example usage:** 
+**Example usage:**
+
 ```bash
 python train.py --d sample_train_data --m vae -e 5 -t y
 ```
+
 ```bash
 python train.py --d sample_train_data --m ed --e 5 -t y
 ```
 
 ## Model Testing
+
 **Deepfake Detection using GenConViT**
 
 To make prediction using the trained GenConViT model, follow these steps:
 
 1. Download the pretrained model from [Huggingface](https://huggingface.co/Deressa/GenConViT) and save it in the `weight` folder.
 
-Network A (ed) 
+Network A (ed)
+
 ```bash
 wget https://huggingface.co/Deressa/GenConViT/resolve/main/genconvit_ed_inference.pth
 ```
+
 Network B (vae)
+
 ```bash
 wget https://huggingface.co/Deressa/GenConViT/resolve/main/genconvit_vae_inference.pth
 ```
@@ -136,32 +148,37 @@ python prediction.py \
     --n <model-variant>
     --fp16 <half-precision>
 ```
-  `<path-to-video-data>`: Path to the video data or `[ dfdc, faceforensics, timit, celeb ]`.<br/>
-  `<number-of-frames>`: Specify the number of frames to be extracted for the video prediction. The default is 15 frames.<br/>
-  `<model-variant>`: Specify the model variant (`ed` or `vae` or both:genconvit).<br/>
-  `<dataset>`: the dataset type. `[ dfdc, faceforensics, timit, celeb ]` or yours.<br/>
-  `<half-precision>`: Enable half-precision (float16).
 
-**Example usage:** 
+`<path-to-video-data>`: Path to the video data or `[ dfdc, faceforensics, timit, celeb ]`.<br/>
+`<number-of-frames>`: Specify the number of frames to be extracted for the video prediction. The default is 15 frames.<br/>
+`<model-variant>`: Specify the model variant (`ed` or `vae` or both:genconvit).<br/>
+`<dataset>`: the dataset type. `[ dfdc, faceforensics, timit, celeb ]` or yours.<br/>
+`<half-precision>`: Enable half-precision (float16).
+
+**Example usage:**
+
 ```bash
-python prediction.py --p DeepfakeTIMIT --d timit --f 10 
+python prediction.py --p DeepfakeTIMIT --d timit --f 10
 ```
+
 To use ed, or vae variant:
 
-``` 
+```
 python prediction.py --p sample_prediction_data --n vae --f 10
 ```
+
 ```
 python prediction.py --p sample_prediction_data --n ed --f 10
 ```
+
 ```
 python prediction.py --p DeepfakeTIMIT --n vae --d timit --f 10
 ```
 
-
 ## Deploy
 
 ### Test locally.
+
 ```d
 python -u -m server
 curl -X GET http://localhost:8000/healthcheck
@@ -170,7 +187,7 @@ curl -X POST http://localhost:8000/predict \
     -H "Content-Type: application/json" \
     --data '{"file_path":"https://www.evalai.org/ocasio.mp4"}'
 
-# to test the NO_FACE feature 
+# to test the NO_FACE feature
  curl -X POST  http://localhost:8000/predict \
     -H "Content-Type: application/json" \
     --data '{"file_path":"https://static.vecteezy.com/system/resources/previews/041/394/978/mp4/beautiful-white-swans-couple-with-fluffy-wings-floating-on-the-lake-with-turtles-in-the-park-on-a-sunny-day-animals-birds-and-wildlife-travel-and-vacation-concept-slow-motion-video.mp4"}'
@@ -178,17 +195,15 @@ curl -X POST http://localhost:8000/predict \
 
 For stress test, run `python stress_test.py`.
 
-
-
-
-### with Docker 
+### with Docker
 
 ```
-export DOCKER_REGISTRY="linqiu0128" # Put your Docker Hub username here  
+export DOCKER_REGISTRY="linqiu0128" # Put your Docker Hub username here
 docker build --no-cache -t "$DOCKER_REGISTRY/genconvit-finetuned" -f Dockerfile .
 ```
 
 Push your docker image to docker hub
+
 ```
 docker login
 
@@ -197,18 +212,22 @@ docker tag "$DOCKER_REGISTRY/genconvit-finetuned:latest" "$DOCKER_REGISTRY/genco
 docker push $DOCKER_REGISTRY/genconvit-finetuned:v1.5 #remember to update the tag
 ```
 
-To pull the docker image, 
+To pull the docker image,
 
 ```
 docker pull $DOCKER_REGISTRY/genconvit-finetuned:v1.5 #remember to update the tag
 ```
+
 Run this Docker image locally on a GPU to test that it can run inferences as expected:
+
 ```
 docker run --gpus=all -d -p 80:8000 --env SERVER_PORT=8000 --name "genconvit-finetuned" "$DOCKER_REGISTRY/genconvit-finetuned:v1.5"
 ```
+
 Remember to update the 80 to other host port that it will be used. GCP and EC2 use 80, but Octo uses 8000.
 
-To stop it, run 
+To stop it, run
+
 ```
 docker stop genconvit-finetuned;docker rm genconvit-finetuned
 ```
@@ -218,34 +237,35 @@ docker stop genconvit-finetuned;docker rm genconvit-finetuned
 ```
 curl -X GET http://localhost:80/healthcheck
 ```
-until you see {"healthy":true ......} with model versions 
 
-Test the fake one, 
+until you see {"healthy":true ......} with model versions
+
+Test the fake one,
+
 ```
 curl -X POST http://localhost:80/predict \
     -H "Content-Type: application/json" \
     --data '{"file_path":"https://www.evalai.org/ocasio.mp4"}'
 ```
-Test the unknown one, 
+
+Test the unknown one,
+
 ```
  curl -X POST  http://localhost:80/predict \
     -H "Content-Type: application/json" \
     --data '{"file_path":"https://static.vecteezy.com/system/resources/previews/041/394/978/mp4/beautiful-white-swans-couple-with-fluffy-wings-floating-on-the-lake-with-turtles-in-the-park-on-a-sunny-day-animals-birds-and-wildlife-travel-and-vacation-concept-slow-motion-video.mp4"}'
 ```
 
-
 To debug and view logs, `docker logs genconvit-finetuned`
 
-``sudo usermod -a -G docker ubuntu``
-allowing ubuntu user to execute Docker commands without needing superuser privileges. 
+`sudo usermod -a -G docker ubuntu`
+allowing ubuntu user to execute Docker commands without needing superuser privileges.
 
+To test to server deployment,
 
-To test to server deployment, 
 ```
 curl -X POST http://<Add your server address here, like 35.166.207.238> :80/predict     -H "Content-Type: application/json"     --data '{"file_path":"https://www.evalai.org/ocasio.mp4"}'
 ```
-
-
 
 ### local test
 
@@ -258,14 +278,14 @@ python predict.py --p examples/oren.mp4  --n vae --f 10
 ```python
 python custommodel.py -p https://www.evalai.org/ocasio.mp4 -f 10 -n vae
 ```
+
 please keep the precision as 32.
 
-
-
 ## Bibtex
+
 ```bash
 @misc{wodajo2023deepfake,
-      title={Deepfake Video Detection Using Generative Convolutional Vision Transformer}, 
+      title={Deepfake Video Detection Using Generative Convolutional Vision Transformer},
       author={Deressa Wodajo and Solomon Atnafu and Zahid Akhtar},
       year={2023},
       eprint={2307.07036},
@@ -274,7 +294,10 @@ please keep the precision as 32.
 }
 ```
 
-
 ## Acknowledgement
 
 This research was funded by Addis Ababa University Research Grant for the Adaptive Problem-Solving Research. Reference number RD/PY-183/2021. Grant number AR/048/2021.
+
+## License
+
+This project is licensed under the terms of the GNU General Public License v3.0 license.
